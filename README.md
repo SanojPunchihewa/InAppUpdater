@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/SanojPunchihewa/InAppUpdater.svg?branch=master)](https://travis-ci.com/SanojPunchihewa/InAppUpdater)
+[![](https://jitpack.io/v/SanojPunchihewa/InAppUpdater.svg)](https://jitpack.io/#SanojPunchihewa/InAppUpdater)
 
 # InAppUpdater
 Android Library to easily implement in-app updates
