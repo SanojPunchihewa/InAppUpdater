@@ -3,8 +3,8 @@ package com.zanojmobiapps.inappupdatedemoapp;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.zma.updatemanager.UpdateManager;
-import com.zma.updatemanager.UpdateManagerConstant;
+import com.sanojpunchihewa.updatemanager.UpdateManager;
+import com.sanojpunchihewa.updatemanager.UpdateManagerConstant;
 
 public class MainActivity extends AppCompatActivity {
 
