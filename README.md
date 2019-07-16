@@ -5,8 +5,7 @@ Android Library to easily implement in-app updates
 
 ## Add to project
 
-
-Add it to your build.gradle with:
+Step 1: Add it in your root build.gradle at the end of repositories
 ```Gradle
 allprojects {
     repositories {
@@ -14,10 +13,10 @@ allprojects {
     }
 }
 ```
-and:
+Step 2: Add the dependency
 ```Gradle
 dependencies {
-    compile 'com.github.SanojPunchihewa:InAppUpdater:{latest version}'
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:v1.0'
 }
 ```
 
