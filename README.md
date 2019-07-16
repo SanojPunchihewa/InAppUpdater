@@ -19,7 +19,7 @@ allprojects {
 Step 2: Add the dependency
 ```Gradle
 dependencies {
-    implementation 'com.github.SanojPunchihewa:InAppUpdater:v1.0'
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.2'
 }
 ```
 
