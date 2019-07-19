@@ -7,11 +7,9 @@
 # InAppUpdater
 Android Library to easily implement in-app updates
 
-# Usage
+## :pencil2: Usage
 
-## Add to project
-
-Step 1: Add it in your root build.gradle at the end of repositories
+### Step 1: Add it in your root build.gradle
 ```Gradle
 allprojects {
     repositories {
@@ -19,14 +17,14 @@ allprojects {
     }
 }
 ```
-Step 2: Add the dependency
+### Step 2: Add the dependency
 ```Gradle
 dependencies {
     implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.2'
 }
 ```
 
-## Step 1: Initialize the UpdateManager
+### Step 3: Initialize the UpdateManager
 Initialize the UpdateManager in your `onCreate` method of the Activity
 ```java
     UpdateManager.Builder().mode(UpdateManagerConstant.IMMEDIATE).start(this);
@@ -44,7 +42,7 @@ There are two modes
      UpdateManager.Builder().mode(UpdateManagerConstant.IMMEDIATE)
 ```
 
-## Step 2: Resume the updates
+### Step 4: Resume the updates
 Call `continueUpdate` method in your `onResume` method to install waiting updates
 ```java
 @Override
@@ -53,10 +51,16 @@ protected void onResume() {
     UpdateManager.continueUpdate(this);
 }
 ```
-## Contributions
+## :exclamation: Troubleshoot
+- In-app updates works only with devices running **Android 5.0 (API level 21) or higher**
+- In-app updates are available only to user accounts that own the app. So, **make sure the account you’re using has downloaded your app from Google Play at least once before using the account to test in-app updates.**
+- Make sure that the app that you are testing in-app updates with has the **same application ID and is signed with the same signing key** as the one available from Google Play.
+- Because Google Play can only update an app to a higher version code, make sure the app you are **testing as a lower version code than the update version code.**
+
+## :open_hands: Contributions
 Any contributions are welcome!
 
-## License
+## :page_facing_up: License
 ```
 MIT License
 
