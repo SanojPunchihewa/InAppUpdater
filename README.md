@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/SanojPunchihewa/InAppUpdater/blob/master/LICENSE)
 
 # InAppUpdater
-Android Library to easily implement in-app updates
+Android Library to easily implement [in-app updates](https://developer.android.com/guide/app-bundle/in-app-updates)
 
 ## :pencil2: Usage
 
