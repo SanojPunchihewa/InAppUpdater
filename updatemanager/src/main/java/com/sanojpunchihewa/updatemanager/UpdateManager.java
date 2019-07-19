@@ -1,11 +1,12 @@
 package com.sanojpunchihewa.updatemanager;
 
 
+import static com.sanojpunchihewa.updatemanager.UpdateManagerConstant.FLEXIBLE;
+
 import android.app.Activity;
 import android.content.IntentSender;
 import android.util.Log;
 import android.view.View;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -16,8 +17,6 @@ import com.google.android.play.core.install.model.InstallStatus;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
-
-import static com.sanojpunchihewa.updatemanager.UpdateManagerConstant.FLEXIBLE;
 
 public class UpdateManager {
 
@@ -36,29 +35,29 @@ public class UpdateManager {
 
     private int availableVersionCode = 0;
 
-    public static UpdateManager Builder (){
-        if(instance == null){
+    public static UpdateManager Builder() {
+        if (instance == null) {
             instance = new UpdateManager();
         }
         Log.i(TAG, "Instance created");
         return instance;
     }
 
-    public UpdateManager mode (int mode){
+    public UpdateManager mode(int mode) {
         this.mode = mode;
         return this;
     }
 
-    public void start (Activity activity){
-        this.appUpdateManager =  AppUpdateManagerFactory.create(activity);
+    public void start(Activity activity) {
+        this.appUpdateManager = AppUpdateManagerFactory.create(activity);
         this.appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-        if(mode == FLEXIBLE) {
+        if (mode == FLEXIBLE) {
             setUpListener(activity);
         }
         checkUpdate(activity);
     }
 
-    private void checkUpdate (final Activity activity){
+    private void checkUpdate(final Activity activity) {
         // Checks that the platform will allow the specified type of update.
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
@@ -76,7 +75,7 @@ public class UpdateManager {
         });
     }
 
-    private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo){
+    private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo) {
         try {
             Log.i(TAG, "Starting update");
             appUpdateManager.startUpdateFlowForResult(
@@ -101,7 +100,7 @@ public class UpdateManager {
 //        }
 //    }
 
-    private void setUpListener (final Activity activity){
+    private void setUpListener(final Activity activity) {
         InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
             @Override
             public void onStateUpdate(InstallState installState) {
@@ -115,15 +114,15 @@ public class UpdateManager {
         appUpdateManager.registerListener(listener);
     }
 
-    public static void continueUpdate(final Activity activity){
-        if (instance.mode == FLEXIBLE){
+    public static void continueUpdate(final Activity activity) {
+        if (instance.mode == FLEXIBLE) {
             continueUpdateForFlexible(activity);
         } else {
             continueUpdateForImmediate(activity);
         }
     }
 
-    private static void continueUpdateForFlexible(final Activity activity){
+    private static void continueUpdateForFlexible(final Activity activity) {
         instance.appUpdateManager
                 .getAppUpdateInfo()
                 .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
@@ -140,25 +139,25 @@ public class UpdateManager {
 
     private static void continueUpdateForImmediate(final Activity activity) {
         instance.appUpdateManager
-            .getAppUpdateInfo()
-            .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
-                @Override
-                public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                    if (appUpdateInfo.updateAvailability()
-                            == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                        // If an in-app update is already running, resume the update.
-                        try {
-                            instance.appUpdateManager.startUpdateFlowForResult(
-                                    appUpdateInfo,
-                                    instance.mode,
-                                    activity,
-                                    UpdateManagerConstant.REQUEST_CODE);
-                        } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                .getAppUpdateInfo()
+                .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+                    @Override
+                    public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                        if (appUpdateInfo.updateAvailability()
+                                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                            // If an in-app update is already running, resume the update.
+                            try {
+                                instance.appUpdateManager.startUpdateFlowForResult(
+                                        appUpdateInfo,
+                                        instance.mode,
+                                        activity,
+                                        UpdateManagerConstant.REQUEST_CODE);
+                            } catch (IntentSender.SendIntentException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                }
-            });
+                });
     }
 
     private void popupSnackbarForCompleteUpdate(Activity activity) {
