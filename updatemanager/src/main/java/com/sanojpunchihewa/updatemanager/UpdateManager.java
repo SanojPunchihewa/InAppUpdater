@@ -21,6 +21,8 @@ import static com.sanojpunchihewa.updatemanager.UpdateManagerConstant.FLEXIBLE;
 
 public class UpdateManager {
 
+    private static final String TAG = "UpdateManager";
+
     private static UpdateManager instance;
 
     // Default mode is FLEXIBLE
@@ -38,6 +40,7 @@ public class UpdateManager {
         if(instance == null){
             instance = new UpdateManager();
         }
+        Log.i(TAG, "Instance created");
         return instance;
     }
 
@@ -63,10 +66,11 @@ public class UpdateManager {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                         && appUpdateInfo.isUpdateTypeAllowed(mode)) {
                     // Request the update.
+                    Log.i(TAG, "Update available");
                     availableVersionCode = appUpdateInfo.availableVersionCode();
                     startUpdate(activity, appUpdateInfo);
                 } else {
-                    Log.d("LIBRARY_ZMA", "No Update available");
+                    Log.i(TAG, "No update available");
                 }
             }
         });
@@ -74,13 +78,14 @@ public class UpdateManager {
 
     private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo){
         try {
+            Log.i(TAG, "Starting update");
             appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
                     mode,
                     activity,
                     UpdateManagerConstant.REQUEST_CODE);
         } catch (IntentSender.SendIntentException e) {
-            e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
     }
 
@@ -134,16 +139,13 @@ public class UpdateManager {
     }
 
     private static void continueUpdateForImmediate(final Activity activity) {
-        Log.d("LIBRARY_ZMA", "Continue Update main");
         instance.appUpdateManager
             .getAppUpdateInfo()
             .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
                 @Override
                 public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                    Log.d("LIBRARY_ZMA", "AV Update : " + appUpdateInfo.updateAvailability());
                     if (appUpdateInfo.updateAvailability()
                             == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                        Log.d("LIBRARY_ZMA", "Continue Update");
                         // If an in-app update is already running, resume the update.
                         try {
                             instance.appUpdateManager.startUpdateFlowForResult(
