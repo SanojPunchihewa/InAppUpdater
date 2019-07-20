@@ -9,7 +9,7 @@
 </div>
 
 <h1 align="center">InAppUpdater</h1>
-<div align="center">Android Library to easily implement <a href="https://developer.android.com/guide/app-bundle/in-app-updates"></a>in-app updates</div>
+<p align="center">Android Library to easily implement <a href="https://developer.android.com/guide/app-bundle/in-app-updates">in-app updates</a></p>
 
 ## :pencil2: Usage
 
