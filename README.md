@@ -4,8 +4,12 @@
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=21)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/SanojPunchihewa/InAppUpdater/blob/master/LICENSE)
 
-# InAppUpdater
-Android Library to easily implement in-app updates
+<div align="center">
+    <img src="/images/logo.png"/>
+</div>
+
+<h1 align="center">InAppUpdater</h1>
+<div align="center">Android Library to easily implement <a href="https://developer.android.com/guide/app-bundle/in-app-updates"></a>in-app updates</div>
 
 ## :pencil2: Usage
 
