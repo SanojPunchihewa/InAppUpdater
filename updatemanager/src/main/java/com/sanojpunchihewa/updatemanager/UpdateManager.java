@@ -36,10 +36,10 @@ public class UpdateManager {
     // Returns an intent object that you use to check for an update.
     private Task<AppUpdateInfo> appUpdateInfoTask;
 
-    private int availableVersionCode = 0;
-
     private UpdateManager(Activity activity) {
         mActivityWeakReference = new WeakReference<>(activity);
+        this.appUpdateManager = AppUpdateManagerFactory.create(getActivity());
+        this.appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
     }
 
     public static UpdateManager Builder(Activity activity) {
@@ -58,8 +58,6 @@ public class UpdateManager {
     }
 
     public void start() {
-        this.appUpdateManager = AppUpdateManagerFactory.create(getActivity());
-        this.appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
         if (mode == FLEXIBLE) {
             setUpListener();
         }
@@ -76,7 +74,6 @@ public class UpdateManager {
                         && appUpdateInfo.isUpdateTypeAllowed(mode)) {
                     // Request the update.
                     Log.d(TAG, "Update available");
-                    availableVersionCode = appUpdateInfo.availableVersionCode();
                     startUpdate(appUpdateInfo);
                 } else {
                     Log.d(TAG, "No Update available");
@@ -187,8 +184,30 @@ public class UpdateManager {
         snackbar.show();
     }
 
+    public void getAvailableVersionCode(final onVersionCheckListener onVersionCheckListener) {
+        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                        && appUpdateInfo.isUpdateTypeAllowed(mode)) {
+                    // Request the update.
+                    Log.d(TAG, "Update available");
+                    int availableVersionCode = appUpdateInfo.availableVersionCode();
+                    onVersionCheckListener.onReceiveVersionCode(availableVersionCode);
+                } else {
+                    Log.d(TAG, "No Update available");
+                }
+            }
+        });
+    }
+
     private Activity getActivity() {
         return mActivityWeakReference.get();
+    }
+
+    public interface onVersionCheckListener {
+
+        void onReceiveVersionCode(int code);
     }
 
 }
