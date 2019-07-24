@@ -20,7 +20,7 @@ import com.google.android.play.core.tasks.Task;
 
 public class UpdateManager {
 
-    private static final String TAG = "UpdateManager";
+    private static final String TAG = "InUpdateManager";
 
     private static UpdateManager instance;
 
@@ -39,11 +39,13 @@ public class UpdateManager {
         if (instance == null) {
             instance = new UpdateManager();
         }
-        Log.i(TAG, "Instance created");
+        Log.d(TAG, "Instance created");
         return instance;
     }
 
     public UpdateManager mode(int mode) {
+        String strMode = mode == FLEXIBLE ? "FLEXIBLE" : "IMMEDIATE";
+        Log.d(TAG, "Set update mode to : " + strMode);
         this.mode = mode;
         return this;
     }
@@ -59,17 +61,18 @@ public class UpdateManager {
 
     private void checkUpdate(final Activity activity) {
         // Checks that the platform will allow the specified type of update.
+        Log.d(TAG, "Checking for updates");
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                         && appUpdateInfo.isUpdateTypeAllowed(mode)) {
                     // Request the update.
-                    Log.i(TAG, "Update available");
+                    Log.d(TAG, "Update available");
                     availableVersionCode = appUpdateInfo.availableVersionCode();
                     startUpdate(activity, appUpdateInfo);
                 } else {
-                    Log.i(TAG, "No update available");
+                    Log.d(TAG, "No Update available");
                 }
             }
         });
@@ -77,7 +80,7 @@ public class UpdateManager {
 
     private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo) {
         try {
-            Log.i(TAG, "Starting update");
+            Log.d(TAG, "Starting update");
             appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
                     mode,
@@ -107,6 +110,7 @@ public class UpdateManager {
                 if (installState.installStatus() == InstallStatus.DOWNLOADED) {
                     // After the update is downloaded, show a notification
                     // and request user confirmation to restart the app.
+                    Log.d(TAG, "An update has been downloaded");
                     popupSnackbarForCompleteUpdate(activity);
                 }
             }
@@ -131,6 +135,7 @@ public class UpdateManager {
                         // If the update is downloaded but not installed,
                         // notify the user to complete the update.
                         if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                            Log.d(TAG, "An update has been downloaded");
                             instance.popupSnackbarForCompleteUpdate(activity);
                         }
                     }
@@ -153,7 +158,7 @@ public class UpdateManager {
                                         activity,
                                         UpdateManagerConstant.REQUEST_CODE);
                             } catch (IntentSender.SendIntentException e) {
-                                e.printStackTrace();
+                                Log.d(TAG, e.getMessage());
                             }
                         }
                     }
