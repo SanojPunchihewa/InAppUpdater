@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
 
 public class UpdateManager {
 
-    private static final String TAG = "InUpdateManager";
+    private static final String TAG = "InAppUpdateManager";
 
     private WeakReference<Activity> mActivityWeakReference;
 
