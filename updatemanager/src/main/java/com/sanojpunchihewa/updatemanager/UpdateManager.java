@@ -1,11 +1,12 @@
 package com.sanojpunchihewa.updatemanager;
 
 
+import static com.sanojpunchihewa.updatemanager.UpdateManagerConstant.FLEXIBLE;
+
 import android.app.Activity;
 import android.content.IntentSender;
 import android.util.Log;
 import android.view.View;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -17,9 +18,9 @@ import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 
-import static com.sanojpunchihewa.updatemanager.UpdateManagerConstant.FLEXIBLE;
-
 public class UpdateManager {
+
+    private static final String TAG = "InUpdateManager";
 
     private static UpdateManager instance;
 
@@ -34,53 +35,59 @@ public class UpdateManager {
 
     private int availableVersionCode = 0;
 
-    public static UpdateManager Builder (){
-        if(instance == null){
+    public static UpdateManager Builder() {
+        if (instance == null) {
             instance = new UpdateManager();
         }
+        Log.d(TAG, "Instance created");
         return instance;
     }
 
-    public UpdateManager mode (int mode){
+    public UpdateManager mode(int mode) {
+        String strMode = mode == FLEXIBLE ? "FLEXIBLE" : "IMMEDIATE";
+        Log.d(TAG, "Set update mode to : " + strMode);
         this.mode = mode;
         return this;
     }
 
-    public void start (Activity activity){
-        this.appUpdateManager =  AppUpdateManagerFactory.create(activity);
+    public void start(Activity activity) {
+        this.appUpdateManager = AppUpdateManagerFactory.create(activity);
         this.appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-        if(mode == FLEXIBLE) {
+        if (mode == FLEXIBLE) {
             setUpListener(activity);
         }
         checkUpdate(activity);
     }
 
-    private void checkUpdate (final Activity activity){
+    private void checkUpdate(final Activity activity) {
         // Checks that the platform will allow the specified type of update.
+        Log.d(TAG, "Checking for updates");
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
                 if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                         && appUpdateInfo.isUpdateTypeAllowed(mode)) {
                     // Request the update.
+                    Log.d(TAG, "Update available");
                     availableVersionCode = appUpdateInfo.availableVersionCode();
                     startUpdate(activity, appUpdateInfo);
                 } else {
-                    Log.d("LIBRARY_ZMA", "No Update available");
+                    Log.d(TAG, "No Update available");
                 }
             }
         });
     }
 
-    private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo){
+    private void startUpdate(Activity activity, AppUpdateInfo appUpdateInfo) {
         try {
+            Log.d(TAG, "Starting update");
             appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
                     mode,
                     activity,
                     UpdateManagerConstant.REQUEST_CODE);
         } catch (IntentSender.SendIntentException e) {
-            e.printStackTrace();
+            Log.d(TAG, e.getMessage());
         }
     }
 
@@ -96,13 +103,14 @@ public class UpdateManager {
 //        }
 //    }
 
-    private void setUpListener (final Activity activity){
+    private void setUpListener(final Activity activity) {
         InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
             @Override
             public void onStateUpdate(InstallState installState) {
                 if (installState.installStatus() == InstallStatus.DOWNLOADED) {
                     // After the update is downloaded, show a notification
                     // and request user confirmation to restart the app.
+                    Log.d(TAG, "An update has been downloaded");
                     popupSnackbarForCompleteUpdate(activity);
                 }
             }
@@ -110,15 +118,15 @@ public class UpdateManager {
         appUpdateManager.registerListener(listener);
     }
 
-    public static void continueUpdate(final Activity activity){
-        if (instance.mode == FLEXIBLE){
+    public static void continueUpdate(final Activity activity) {
+        if (instance.mode == FLEXIBLE) {
             continueUpdateForFlexible(activity);
         } else {
             continueUpdateForImmediate(activity);
         }
     }
 
-    private static void continueUpdateForFlexible(final Activity activity){
+    private static void continueUpdateForFlexible(final Activity activity) {
         instance.appUpdateManager
                 .getAppUpdateInfo()
                 .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
@@ -127,6 +135,7 @@ public class UpdateManager {
                         // If the update is downloaded but not installed,
                         // notify the user to complete the update.
                         if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                            Log.d(TAG, "An update has been downloaded");
                             instance.popupSnackbarForCompleteUpdate(activity);
                         }
                     }
@@ -134,29 +143,26 @@ public class UpdateManager {
     }
 
     private static void continueUpdateForImmediate(final Activity activity) {
-        Log.d("LIBRARY_ZMA", "Continue Update main");
         instance.appUpdateManager
-            .getAppUpdateInfo()
-            .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
-                @Override
-                public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                    Log.d("LIBRARY_ZMA", "AV Update : " + appUpdateInfo.updateAvailability());
-                    if (appUpdateInfo.updateAvailability()
-                            == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                        Log.d("LIBRARY_ZMA", "Continue Update");
-                        // If an in-app update is already running, resume the update.
-                        try {
-                            instance.appUpdateManager.startUpdateFlowForResult(
-                                    appUpdateInfo,
-                                    instance.mode,
-                                    activity,
-                                    UpdateManagerConstant.REQUEST_CODE);
-                        } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                .getAppUpdateInfo()
+                .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+                    @Override
+                    public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                        if (appUpdateInfo.updateAvailability()
+                                == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                            // If an in-app update is already running, resume the update.
+                            try {
+                                instance.appUpdateManager.startUpdateFlowForResult(
+                                        appUpdateInfo,
+                                        instance.mode,
+                                        activity,
+                                        UpdateManagerConstant.REQUEST_CODE);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.d(TAG, e.getMessage());
+                            }
                         }
                     }
-                }
-            });
+                });
     }
 
     private void popupSnackbarForCompleteUpdate(Activity activity) {
