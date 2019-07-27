@@ -24,27 +24,23 @@ allprojects {
 ### Step 2: Add the dependency
 ```Gradle
 dependencies {
-    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.2'
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.3'
 }
 ```
 
 ### Step 3: Initialize the UpdateManager
 Initialize the UpdateManager in your `onCreate` method of the Activity
 ```java
-    UpdateManager.Builder().mode(UpdateManagerConstant.IMMEDIATE).start(this);
+    UpdateManager.Builder(this).mode(UpdateManagerConstant.FLEXIBLE).start();
 ```
 
-#### Update Mode
+**Update Mode**
+
 There are two modes
-* Flexible *(default)* - User can use the app during update download, installation and restart needs to be triggered by user
+* Flexible(`UpdateManagerConstant.FLEXIBLE`) *(default)* - User can use the app during update download, installation and restart needs to be triggered by user
 
-* Immediate - User will be blocked until download and installation is finished, restart is triggered automatically
+* Immediate(`UpdateManagerConstant.IMMEDIATE`) - User will be blocked until download and installation is finished, restart is triggered automatically
 
-
-#### Set the update mode
-```java
-     UpdateManager.Builder().mode(UpdateManagerConstant.IMMEDIATE)
-```
 
 ### Step 4: Resume the updates
 Call `continueUpdate` method in your `onResume` method to install waiting updates
@@ -52,9 +48,24 @@ Call `continueUpdate` method in your `onResume` method to install waiting update
 @Override
 protected void onResume() {
     super.onResume();
-    UpdateManager.continueUpdate(this);
+    UpdateManager.continueUpdate();
 }
 ```
+**Additionally** you can get the Available Version Code of the update. You can find these codes in the [demo app](/app/src/main/java/com/zanojmobiapps/inappupdatedemoapp/MainActivity.java)
+
+```java
+mUpdateManager.getAvailableVersionCode(new onVersionCheckListener() {
+    @Override
+    public void onReceiveVersionCode(final int code) {
+        // Do something here
+    }
+});
+```
+## :movie_camera: Demo
+Flexible Update             |  Immediate Update
+:-------------------------:|:-------------------------:
+![](/images/gif/flexible_update.gif)  |  ![](/images/gif/immediate_update.gif)
+
 ## :exclamation: Troubleshoot
 - In-app updates works only with devices running **Android 5.0 (API level 21) or higher**
 - In-app updates are available only to user accounts that own the app. So, **make sure the account you’re using has downloaded your app from Google Play at least once before using the account to test in-app updates.**
