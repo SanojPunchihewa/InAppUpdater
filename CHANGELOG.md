@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to InAppUpdater will be documented in this file.
 
+## [1.0.4-alpha.1] - 2019-07-29
+- Fix Jitpack release issue
+
 ## [1.0.3] - 2019-07-27
 ### Added
 - Method to get the Version code of the Available Update
