@@ -24,14 +24,20 @@ allprojects {
 ### Step 2: Add the dependency
 ```Gradle
 dependencies {
-    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.3'
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.4-alpha.1'
 }
 ```
 
 ### Step 3: Initialize the UpdateManager
+Declare the UpdateManager in your Activity
+```java
+    // Declare the UpdateManager
+    UpdateManager mUpdateManager;
+```
 Initialize the UpdateManager in your `onCreate` method of the Activity
 ```java
-    UpdateManager.Builder(this).mode(UpdateManagerConstant.FLEXIBLE).start();
+    // Initialize the Update Manager with the Activity and the Update Mode
+    mUpdateManager = UpdateManager.Builder(this).mode(UpdateManagerConstant.FLEXIBLE).start();
 ```
 
 **Update Mode**
@@ -48,7 +54,8 @@ Call `continueUpdate` method in your `onResume` method to install waiting update
 @Override
 protected void onResume() {
     super.onResume();
-    UpdateManager.continueUpdate();
+    // Continue updates when resumed
+    mUpdateManager.continueUpdate();
 }
 ```
 **Additionally** you can get the Available Version Code of the update. You can find these codes in the [demo app](/app/src/main/java/com/zanojmobiapps/inappupdatedemoapp/MainActivity.java)
