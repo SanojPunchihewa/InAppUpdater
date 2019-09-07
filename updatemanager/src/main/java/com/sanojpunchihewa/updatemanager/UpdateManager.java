@@ -91,7 +91,7 @@ public class UpdateManager {
                     getActivity(),
                     UpdateManagerConstant.REQUEST_CODE);
         } catch (IntentSender.SendIntentException e) {
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG, "" + e.getMessage());
         }
     }
 
@@ -162,7 +162,7 @@ public class UpdateManager {
                                         getActivity(),
                                         UpdateManagerConstant.REQUEST_CODE);
                             } catch (IntentSender.SendIntentException e) {
-                                Log.d(TAG, e.getMessage());
+                                Log.d(TAG, "" + e.getMessage());
                             }
                         }
                     }
