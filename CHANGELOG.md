@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to InAppUpdater will be documented in this file.
 
+## [1.0.4-alpha.2] - 2019-09-07
+- Fix Send Intent Exception
+
 ## [1.0.4-alpha.1] - 2019-07-29
 - Fix Jitpack release issue
 
