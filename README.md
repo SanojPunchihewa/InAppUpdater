@@ -79,6 +79,8 @@ Flexible Update             |  Immediate Update
 - Make sure that the app that you are testing in-app updates with has the **same application ID and is signed with the same signing key** as the one available from Google Play.
 - Because Google Play can only update an app to a higher version code, make sure the app you are **testing as a lower version code than the update version code.**
 
+You can find more information at [Frequently Asked Questions](FAQ.md)
+
 ## :open_hands: Contributions
 Any contributions are welcome!
 
