@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to InAppUpdater will be documented in this file.
 
+
+## [1.0.4] - 2019-09-22
+- Fix fading of Material TextInputLayout
+
 ## [1.0.4-alpha.2] - 2019-09-07
 - Fix Send Intent Exception
 
