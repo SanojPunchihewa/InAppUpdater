@@ -7,6 +7,10 @@ import android.app.Activity;
 import android.content.IntentSender;
 import android.util.Log;
 import android.view.View;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle.Event;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -19,11 +23,11 @@ import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 import java.lang.ref.WeakReference;
 
-public class UpdateManager {
+public class UpdateManager implements LifecycleObserver {
 
     private static final String TAG = "InAppUpdateManager";
 
-    private WeakReference<Activity> mActivityWeakReference;
+    private WeakReference<AppCompatActivity> mActivityWeakReference;
 
     private static UpdateManager instance;
 
@@ -36,13 +40,14 @@ public class UpdateManager {
     // Returns an intent object that you use to check for an update.
     private Task<AppUpdateInfo> appUpdateInfoTask;
 
-    private UpdateManager(Activity activity) {
+    private UpdateManager(AppCompatActivity activity) {
         mActivityWeakReference = new WeakReference<>(activity);
         this.appUpdateManager = AppUpdateManagerFactory.create(getActivity());
         this.appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        activity.getLifecycle().addObserver(this);
     }
 
-    public static UpdateManager Builder(Activity activity) {
+    public static UpdateManager Builder(AppCompatActivity activity) {
         if (instance == null) {
             instance = new UpdateManager(activity);
         }
@@ -107,18 +112,19 @@ public class UpdateManager {
 //        }
 //    }
 
-    private void setUpListener() {
-        InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
-            @Override
-            public void onStateUpdate(InstallState installState) {
-                if (installState.installStatus() == InstallStatus.DOWNLOADED) {
-                    // After the update is downloaded, show a notification
-                    // and request user confirmation to restart the app.
-                    Log.d(TAG, "An update has been downloaded");
-                    popupSnackbarForCompleteUpdate();
-                }
+    private InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
+        @Override
+        public void onStateUpdate(InstallState installState) {
+            if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+                // After the update is downloaded, show a notification
+                // and request user confirmation to restart the app.
+                Log.d(TAG, "An update has been downloaded");
+                popupSnackbarForCompleteUpdate();
             }
-        };
+        }
+    };
+
+    private void setUpListener() {
         appUpdateManager.registerListener(listener);
     }
 
@@ -204,9 +210,20 @@ public class UpdateManager {
         return mActivityWeakReference.get();
     }
 
+    private void unregisterListener() {
+        if (appUpdateManager != null && listener != null) {
+            appUpdateManager.unregisterListener(listener);
+            Log.d(TAG, "Unregistered the install state listener");
+        }
+    }
+
     public interface onVersionCheckListener {
 
         void onReceiveVersionCode(int code);
     }
 
+    @OnLifecycleEvent(Event.ON_DESTROY)
+    private void onDestroy() {
+        unregisterListener();
+    }
 }

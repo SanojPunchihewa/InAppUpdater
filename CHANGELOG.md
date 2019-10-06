@@ -2,6 +2,9 @@
 All notable changes to InAppUpdater will be documented in this file.
 
 
+## [1.0.5-alpha.1] - 2019-10-06
+- Add Lifecycle observer to unregister the update state listener
+
 ## [1.0.4] - 2019-09-22
 - Fix fading of Material TextInputLayout
 
