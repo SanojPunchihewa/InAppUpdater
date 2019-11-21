@@ -37,7 +37,8 @@ Declare the UpdateManager in your Activity
 Initialize the UpdateManager in your `onCreate` method of the Activity
 ```java
     // Initialize the Update Manager with the Activity and the Update Mode
-    mUpdateManager = UpdateManager.Builder(this).mode(UpdateManagerConstant.FLEXIBLE).start();
+    mUpdateManager = UpdateManager.Builder(this).mode(UpdateManagerConstant.FLEXIBLE);
+    mUpdateManager.start();
 ```
 
 **Update Mode**
