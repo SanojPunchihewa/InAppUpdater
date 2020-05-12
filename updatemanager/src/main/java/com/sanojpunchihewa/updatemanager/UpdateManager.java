@@ -128,7 +128,8 @@ public class UpdateManager implements LifecycleObserver {
         appUpdateManager.registerListener(listener);
     }
 
-    public void continueUpdate() {
+    private void continueUpdate() {
+
         if (instance.mode == FLEXIBLE) {
             continueUpdateForFlexible();
         } else {
@@ -225,6 +226,11 @@ public class UpdateManager implements LifecycleObserver {
         void onReceiveVersionCode(int code);
 
         void onReceiveStalenessDays(int days);
+    }
+
+    @OnLifecycleEvent(Event.ON_RESUME)
+    private void onResume() {
+        continueUpdate();
     }
 
     @OnLifecycleEvent(Event.ON_DESTROY)
