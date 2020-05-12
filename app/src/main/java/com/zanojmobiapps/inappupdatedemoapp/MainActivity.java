@@ -43,13 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Continue updates when resumed
-        mUpdateManager.continueUpdate();
-    }
-
     public void callFlexibleUpdate(View view) {
         // Start a Flexible Update
         mUpdateManager.mode(UpdateManagerConstant.FLEXIBLE).start();
