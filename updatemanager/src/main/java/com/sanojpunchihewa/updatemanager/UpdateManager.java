@@ -40,6 +40,8 @@ public class UpdateManager implements LifecycleObserver {
     // Returns an intent object that you use to check for an update.
     private Task<AppUpdateInfo> appUpdateInfoTask;
 
+    private FlexibleUpdateDownloadListener flexibleUpdateDownloadListener;
+
     private UpdateManager(AppCompatActivity activity) {
         mActivityWeakReference = new WeakReference<>(activity);
         this.appUpdateManager = AppUpdateManagerFactory.create(getActivity());
@@ -115,6 +117,13 @@ public class UpdateManager implements LifecycleObserver {
     private InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
         @Override
         public void onStateUpdate(InstallState installState) {
+            if (installState.installStatus() == InstallStatus.DOWNLOADING) {
+                long bytesDownloaded = installState.bytesDownloaded();
+                long totalBytesToDownload = installState.totalBytesToDownload();
+                if (flexibleUpdateDownloadListener != null) {
+                    flexibleUpdateDownloadListener.onDownloadProgress(bytesDownloaded, totalBytesToDownload);
+                }
+            }
             if (installState.installStatus() == InstallStatus.DOWNLOADED) {
                 // After the update is downloaded, show a notification
                 // and request user confirmation to restart the app.
@@ -210,6 +219,10 @@ public class UpdateManager implements LifecycleObserver {
         });
     }
 
+    public void addFlexibleUpdateDownloadListener(FlexibleUpdateDownloadListener flexibleUpdateDownloadListener) {
+        this.flexibleUpdateDownloadListener = flexibleUpdateDownloadListener;
+    }
+
     private Activity getActivity() {
         return mActivityWeakReference.get();
     }
@@ -226,6 +239,12 @@ public class UpdateManager implements LifecycleObserver {
         void onReceiveVersionCode(int code);
 
         void onReceiveStalenessDays(int days);
+    }
+
+    public interface FlexibleUpdateDownloadListener {
+
+        void onDownloadProgress(long bytesDownloaded, long totalBytes);
+
     }
 
     @OnLifecycleEvent(Event.ON_RESUME)
