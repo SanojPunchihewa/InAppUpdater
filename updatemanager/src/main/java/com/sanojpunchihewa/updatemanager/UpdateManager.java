@@ -190,7 +190,7 @@ public class UpdateManager implements LifecycleObserver {
         snackbar.show();
     }
 
-    public void getAvailableVersionCode(final onVersionCheckListener onVersionCheckListener) {
+    public void addUpdateInfoListener(final UpdateInfoListener updateInfoListener) {
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
@@ -198,7 +198,10 @@ public class UpdateManager implements LifecycleObserver {
                     // Request the update.
                     Log.d(TAG, "Update available");
                     int availableVersionCode = appUpdateInfo.availableVersionCode();
-                    onVersionCheckListener.onReceiveVersionCode(availableVersionCode);
+                    int stalenessDays = appUpdateInfo.clientVersionStalenessDays() != null ? appUpdateInfo
+                            .clientVersionStalenessDays() : -1;
+                    updateInfoListener.onReceiveVersionCode(availableVersionCode);
+                    updateInfoListener.onReceiveStalenessDays(stalenessDays);
                 } else {
                     Log.d(TAG, "No Update available");
                 }
@@ -217,9 +220,11 @@ public class UpdateManager implements LifecycleObserver {
         }
     }
 
-    public interface onVersionCheckListener {
+    public interface UpdateInfoListener {
 
         void onReceiveVersionCode(int code);
+
+        void onReceiveStalenessDays(int days);
     }
 
     @OnLifecycleEvent(Event.ON_DESTROY)

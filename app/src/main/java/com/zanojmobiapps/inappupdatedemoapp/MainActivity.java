@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import com.sanojpunchihewa.updatemanager.BuildConfig;
 import com.sanojpunchihewa.updatemanager.UpdateManager;
-import com.sanojpunchihewa.updatemanager.UpdateManager.onVersionCheckListener;
+import com.sanojpunchihewa.updatemanager.UpdateManager.UpdateInfoListener;
 import com.sanojpunchihewa.updatemanager.UpdateManagerConstant;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView txtCurrentVersion = findViewById(R.id.txt_current_version);
         TextView txtAvailableVersion = findViewById(R.id.txt_available_version);
+        TextView txtStalenessDays = findViewById(R.id.txt_staleness_days);
 
         txtCurrentVersion.setText(String.valueOf(BuildConfig.VERSION_CODE));
 
@@ -27,10 +29,15 @@ public class MainActivity extends AppCompatActivity {
         mUpdateManager = UpdateManager.Builder(this);
 
         // Callback from Available version code
-        mUpdateManager.getAvailableVersionCode(new onVersionCheckListener() {
+        mUpdateManager.addUpdateInfoListener(new UpdateInfoListener() {
             @Override
             public void onReceiveVersionCode(final int code) {
                 txtAvailableVersion.setText(String.valueOf(code));
+            }
+
+            @Override
+            public void onReceiveStalenessDays(final int days) {
+                txtStalenessDays.setText(String.valueOf(days));
             }
         });
 
