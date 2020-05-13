@@ -40,6 +40,8 @@ public class UpdateManager implements LifecycleObserver {
     // Returns an intent object that you use to check for an update.
     private Task<AppUpdateInfo> appUpdateInfoTask;
 
+    private FlexibleUpdateDownloadListener flexibleUpdateDownloadListener;
+
     private UpdateManager(AppCompatActivity activity) {
         mActivityWeakReference = new WeakReference<>(activity);
         this.appUpdateManager = AppUpdateManagerFactory.create(getActivity());
@@ -115,6 +117,13 @@ public class UpdateManager implements LifecycleObserver {
     private InstallStateUpdatedListener listener = new InstallStateUpdatedListener() {
         @Override
         public void onStateUpdate(InstallState installState) {
+            if (installState.installStatus() == InstallStatus.DOWNLOADING) {
+                long bytesDownloaded = installState.bytesDownloaded();
+                long totalBytesToDownload = installState.totalBytesToDownload();
+                if (flexibleUpdateDownloadListener != null) {
+                    flexibleUpdateDownloadListener.onDownloadProgress(bytesDownloaded, totalBytesToDownload);
+                }
+            }
             if (installState.installStatus() == InstallStatus.DOWNLOADED) {
                 // After the update is downloaded, show a notification
                 // and request user confirmation to restart the app.
@@ -128,7 +137,8 @@ public class UpdateManager implements LifecycleObserver {
         appUpdateManager.registerListener(listener);
     }
 
-    public void continueUpdate() {
+    private void continueUpdate() {
+
         if (instance.mode == FLEXIBLE) {
             continueUpdateForFlexible();
         } else {
@@ -190,7 +200,7 @@ public class UpdateManager implements LifecycleObserver {
         snackbar.show();
     }
 
-    public void getAvailableVersionCode(final onVersionCheckListener onVersionCheckListener) {
+    public void addUpdateInfoListener(final UpdateInfoListener updateInfoListener) {
         appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
             @Override
             public void onSuccess(AppUpdateInfo appUpdateInfo) {
@@ -198,12 +208,19 @@ public class UpdateManager implements LifecycleObserver {
                     // Request the update.
                     Log.d(TAG, "Update available");
                     int availableVersionCode = appUpdateInfo.availableVersionCode();
-                    onVersionCheckListener.onReceiveVersionCode(availableVersionCode);
+                    int stalenessDays = appUpdateInfo.clientVersionStalenessDays() != null ? appUpdateInfo
+                            .clientVersionStalenessDays() : -1;
+                    updateInfoListener.onReceiveVersionCode(availableVersionCode);
+                    updateInfoListener.onReceiveStalenessDays(stalenessDays);
                 } else {
                     Log.d(TAG, "No Update available");
                 }
             }
         });
+    }
+
+    public void addFlexibleUpdateDownloadListener(FlexibleUpdateDownloadListener flexibleUpdateDownloadListener) {
+        this.flexibleUpdateDownloadListener = flexibleUpdateDownloadListener;
     }
 
     private Activity getActivity() {
@@ -217,9 +234,22 @@ public class UpdateManager implements LifecycleObserver {
         }
     }
 
-    public interface onVersionCheckListener {
+    public interface UpdateInfoListener {
 
         void onReceiveVersionCode(int code);
+
+        void onReceiveStalenessDays(int days);
+    }
+
+    public interface FlexibleUpdateDownloadListener {
+
+        void onDownloadProgress(long bytesDownloaded, long totalBytes);
+
+    }
+
+    @OnLifecycleEvent(Event.ON_RESUME)
+    private void onResume() {
+        continueUpdate();
     }
 
     @OnLifecycleEvent(Event.ON_DESTROY)

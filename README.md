@@ -48,27 +48,39 @@ There are two modes
 
 * Immediate(`UpdateManagerConstant.IMMEDIATE`) - User will be blocked until download and installation is finished, restart is triggered automatically
 
-
-### Step 4: Resume the updates
-Call `continueUpdate` method in your `onResume` method to install waiting updates
-```java
-@Override
-protected void onResume() {
-    super.onResume();
-    // Continue updates when resumed
-    mUpdateManager.continueUpdate();
-}
-```
-**Additionally** you can get the Available Version Code of the update. You can find these codes in the [demo app](/app/src/main/java/com/zanojmobiapps/inappupdatedemoapp/MainActivity.java)
+**Additionally** you can get the Available Version Code of the update and the Number of days passed since the user was notified of an update through the Google Play. You can find these codes in the [demo app](/app/src/main/java/com/zanojmobiapps/inappupdatedemoapp/MainActivity.java)
 
 ```java
-mUpdateManager.getAvailableVersionCode(new onVersionCheckListener() {
+mUpdateManager.addUpdateInfoListener(new UpdateInfoListener() {
     @Override
     public void onReceiveVersionCode(final int code) {
+        // You can get the available version code of the apk in Google Play
         // Do something here
+    }
+
+    @Override
+    public void onReceiveStalenessDays(final int days) {
+        // Number of days passed since the user was notified of an update through the Google Play
+        // If the user hasn't notified this will return -1 as days
+        // You can decide the type of update you want to call
     }
 });
 ```
+
+**Monitoring the flexible update download progres**
+
+You can monitor the download progress of a Flexible Update using this callback. 
+***Note***: This is only available for Flexible update mode. You can find more from the [official doc](https://developer.android.com/guide/playcore/in-app-updates#monitor_flexible)
+```java
+// Callback from Flexible Update Progress
+mUpdateManager.addFlexibleUpdateDownloadListener(new FlexibleUpdateDownloadListener() {
+    @Override
+    public void onDownloadProgress(final long bytesDownloaded, final long totalBytes) {
+       // Show a progress bar or anything you want
+    }
+});
+```
+
 ## :movie_camera: Demo
 Flexible Update             |  Immediate Update
 :-------------------------:|:-------------------------:
