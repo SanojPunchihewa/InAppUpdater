@@ -24,7 +24,7 @@ allprojects {
 ### Step 2: Add the dependency
 ```Gradle
 dependencies {
-    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.5-alpha.1'
+    implementation 'com.github.SanojPunchihewa:InAppUpdater:1.0.5'
 }
 ```
 
@@ -69,7 +69,7 @@ mUpdateManager.addUpdateInfoListener(new UpdateInfoListener() {
 
 **Monitoring the flexible update download progres**
 
-You can monitor the download progress of a Flexible Update using this callback. 
+You can monitor the download progress of a Flexible Update using this callback.
 ***Note***: This is only available for Flexible update mode. You can find more from the [official doc](https://developer.android.com/guide/playcore/in-app-updates#monitor_flexible)
 ```java
 // Callback from Flexible Update Progress
