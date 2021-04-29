@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  ignore:
+  - dependency-name: com.google.android.material:material
+    versions:
+    - 1.2.1
+  - dependency-name: com.android.tools.build:gradle
+    versions:
+    - 4.1.2
+  - dependency-name: com.google.android.play:core
+    versions:
+    - 1.9.0
+  - dependency-name: com.squareup.leakcanary:leakcanary-android
+    versions:
+    - "2.5"
